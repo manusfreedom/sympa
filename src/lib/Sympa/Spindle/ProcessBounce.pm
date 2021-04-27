@@ -151,7 +151,7 @@ sub _twist {
                 return undef;
             }
 
-            if ($who =~ s/\A\(d+)@\z/$1/) {
+            if ($who =~ s/\A(\d+)@\z/$1/) {
                 my $tracking = Sympa::Tracking->new(context => $list);
                 my $info = $tracking->db_fetch(
                     recipient => undef,

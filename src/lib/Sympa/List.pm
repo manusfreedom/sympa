@@ -5899,7 +5899,7 @@ sub get_bounce_address {
         $Conf::Conf{'bounce_email_prefix'},
         join('==', $escwho, $self->{'name'}, @opts));
 
-    if(length($localpart) > 64 and 1 == scalar @opts and @opts[0] =~ s/\A\(d+)\z/$1/){
+    if(length($localpart) > 64 and 1 == scalar @opts and @opts[0] =~ s/\A(\d+)\z/$1/){
         $localpart = sprintf('%s+%s',
         $Conf::Conf{'bounce_email_prefix'},
         join('==', @opts[0] . '==a==', $self->{'name'}, @opts[0]));
