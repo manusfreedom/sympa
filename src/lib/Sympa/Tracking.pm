@@ -163,7 +163,7 @@ sub db_fetch {
     my $sth;
     my $sdm = Sympa::DatabaseManager->instance;
 
-    if (defined $recipient) {
+    if ($recipient ne 'norecipient') {
         unless (
             $sdm
             and $sth = $sdm->do_prepared_query(

@@ -154,14 +154,14 @@ sub _twist {
             if ($who =~ s/\A(\d+)@\z/$1/) {
                 my $tracking = Sympa::Tracking->new(context => $list);
                 my $info = $tracking->db_fetch(
-                    recipient => undef,
+                    recipient => 'norecipient',
                     envid     => $who
                 );
                 if ($info) {
                     $who = $info->{recipient};
                 } else {
                     $log->syslog('notice',
-                        'Skipping bounce %s for unknown notification id in list %s@%s',
+                        'Skipping bounce %s for unknown notification id %s nin list %s@%s',
                         $message, $who, $listname, $robot);
                     return undef;
                 }
