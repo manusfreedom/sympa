@@ -163,31 +163,60 @@ sub db_fetch {
     my $sth;
     my $sdm = Sympa::DatabaseManager->instance;
 
-    unless (
-        $sdm
-        and $sth = $sdm->do_prepared_query(
-            q{SELECT message_id_notification AS message_id,
-                     recipient_notification AS recipient,
-                     reception_option_notification AS reception_option,
-                     status_notification AS status,
-                     arrival_date_notification AS arrival_date,
-                     arrival_epoch_notification AS arrival_epoch,
-                     type_notification AS "type",
-                     pk_notification AS envid
-              FROM notification_table
-              WHERE list_notification = ? AND robot_notification = ? AND
-                    recipient_notification = ? AND pk_notification = ?},
-            $list->{'name'}, $list->{'domain'},
-            $recipient,      $envid
-        )
-    ) {
-        $log->syslog(
-            'err',
-            'Unable to retrieve tracking information for message %s, list %s',
-            $recipient,
-            $list
-        );
-        return undef;
+    if (defined $recipient) {
+        unless (
+            $sdm
+            and $sth = $sdm->do_prepared_query(
+                q{SELECT message_id_notification AS message_id,
+                        recipient_notification AS recipient,
+                        reception_option_notification AS reception_option,
+                        status_notification AS status,
+                        arrival_date_notification AS arrival_date,
+                        arrival_epoch_notification AS arrival_epoch,
+                        type_notification AS "type",
+                        pk_notification AS envid
+                FROM notification_table
+                WHERE list_notification = ? AND robot_notification = ? AND
+                        recipient_notification = ? AND pk_notification = ?},
+                $list->{'name'}, $list->{'domain'},
+                $recipient,      $envid
+            )
+        ) {
+            $log->syslog(
+                'err',
+                'Unable to retrieve tracking information for message %s, list %s',
+                $recipient,
+                $list
+            );
+            return undef;
+        }
+    } else {
+        unless (
+            $sdm
+            and $sth = $sdm->do_prepared_query(
+                q{SELECT message_id_notification AS message_id,
+                        recipient_notification AS recipient,
+                        reception_option_notification AS reception_option,
+                        status_notification AS status,
+                        arrival_date_notification AS arrival_date,
+                        arrival_epoch_notification AS arrival_epoch,
+                        type_notification AS "type",
+                        pk_notification AS envid
+                FROM notification_table
+                WHERE list_notification = ? AND robot_notification = ? AND
+                        pk_notification = ?},
+                $list->{'name'}, $list->{'domain'},
+                $envid
+            )
+        ) {
+            $log->syslog(
+                'err',
+                'Unable to retrieve tracking information for message %s, list %s',
+                $envid,
+                $list
+            );
+            return undef;
+        }
     }
     my $pk_notif = $sth->fetchrow_hashref;
     $sth->finish;

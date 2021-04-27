@@ -150,6 +150,23 @@ sub _twist {
                     $message, $listname, $robot);
                 return undef;
             }
+
+            if ($who =~ s/\A\(d+)@\z/$1/) {
+                my $tracking = Sympa::Tracking->new(context => $list);
+                my $info = $tracking->db_fetch(
+                    recipient => undef,
+                    envid     => $who
+                );
+                if ($info) {
+                    $who = $info->{recipient};
+                } else {
+                    $log->syslog('notice',
+                        'Skipping bounce %s for unknown notification id in list %s@%s',
+                        $message, $who, $listname, $robot);
+                    return undef;
+                }
+            }
+
             # Overwrite context.
             $message->{context} = $list;
 
